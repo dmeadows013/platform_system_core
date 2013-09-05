@@ -7,6 +7,7 @@
 import /init.usb.rc
 import /init.${ro.hardware}.rc
 import /init.trace.rc
+import /init.superuser.rc
 
 on early-init
     # Set init and its forked children's oom_adj.
@@ -260,6 +261,9 @@ on post-fs-data
     # Set indication (checked by vold) that we have finished this action
     #setprop vold.post_fs_data_done 1
 
+    # Run sysinit
+    start sysinit
+
 on boot
 # basic network init
     ifup lo
@@ -434,6 +438,12 @@ service adbd /sbin/adbd
 # adbd on at boot in emulator
 on property:ro.kernel.qemu=1
     start adbd
+
+# sysinit (/system/etc/init.d)
+service sysinit /system/bin/sysinit
+    user root
+    oneshot
+    disabled 
 
 service servicemanager /system/bin/servicemanager
     class core
